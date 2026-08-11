@@ -13,12 +13,13 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
   const initialFormData = {
     category_id: 1,
     author_id: 1,
+    type: "bn", // Default value bangla ('bn')
     title_prefix: "",
     title_suffix: "",
     title: "",
     summary: "",
     description: "",
-    image: null, // File object-er jonyo initial value null
+    image: null,
     caption: "",
     is_video: 0,
     is_live: 0,
@@ -68,8 +69,7 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
     }
   }, [isOpen]);
 
-
-   // Load Authors
+  // Load Authors
   useEffect(() => {
     const loadAuthors = async () => {
       try {
@@ -94,7 +94,6 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
 
-    // File input handle kora
     if (type === "file") {
       const file = files[0];
       if (file) {
@@ -102,19 +101,17 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
           ...prev,
           [name]: file,
         }));
-        setPreview(URL.createObjectURL(file)); 
+        setPreview(URL.createObjectURL(file));
       }
       return;
     }
 
-    
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
     }));
   };
 
-  
   const handleSectionToggle = (sectionId) => {
     setFormData((prev) => {
       const currentSections = prev.sections || [];
@@ -134,14 +131,12 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
     });
   };
 
-  
   const handleModalClose = () => {
     setFormData(initialFormData);
     setPreview(null);
     setError(null);
     onClose();
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -342,9 +337,27 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
               disabled={loading}
             />
           </div>
-   {/* Published At & Category Select */}
+
+          {/* Language, Category, Author & Published At Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         
+            {/* Language Select */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Language <span className="text-destructive">*</span>
+              </label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="glass-input"
+                disabled={loading}
+              >
+                <option value="bn">Bangla</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+
+            {/* Category Select */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Category <span className="text-destructive">*</span>
@@ -366,8 +379,8 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
               </select>
             </div>
 
-
-             <div>
+            {/* Author Select */}
+            <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Author <span className="text-destructive">*</span>
               </label>
@@ -388,7 +401,8 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
               </select>
             </div>
 
-               <div>
+            {/* Published Date */}
+            <div>
               <label className="block text-sm font-semibold text-foreground mb-1">
                 Published Date
               </label>
@@ -402,6 +416,7 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
               />
             </div>
           </div>
+
           {/* Options: Is Video / Is Live */}
           <div className="flex items-center gap-6 pt-2">
             <label className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-foreground">

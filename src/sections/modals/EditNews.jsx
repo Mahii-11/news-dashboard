@@ -7,6 +7,7 @@ const buildFormData = (item) => ({
   title_prefix: item?.title_prefix || "",
   title_suffix: item?.title_suffix || "",
   title: item?.title || "",
+  type: item?.type || "",
   summary: item?.summary || "",
   description: item?.description || "",
   image: null,
@@ -331,9 +332,27 @@ export default function EditNews({ item, onClose, onRefresh }) {
             />
           </div>
 
+
+          
+
           {/* Published At & Category Select */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           
+             <div>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Language <span className="text-destructive">*</span>
+              </label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="glass-input"
+                disabled={loading}
+              >
+                <option value="bn">Bangla</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Category <span className="text-destructive">*</span>
