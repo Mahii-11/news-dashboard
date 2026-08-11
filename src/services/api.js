@@ -1,4 +1,4 @@
-const BASE_URL = "https://backendnews.bdtechdemo.online/api";
+const BASE_URL = "https://newsapi.bdtechdemo.online/api";
 
 /* =========================
    TOKEN MANAGEMENT
