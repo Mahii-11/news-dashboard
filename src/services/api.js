@@ -215,8 +215,20 @@ export const updateNewsData = (id, data) =>
 export const deleteNewsData = (id) =>
   fetchData(`news/delete/${id}`, { method: "DELETE" });
 
-// Section
 
+// Section
+export const getSectionsData = (params) => fetchData(buildEndpoint("sections/index", params));
+export const storeSectionsData = (data) =>
+  fetchData("sections/store", { method: "POST", body: data });
+export const updateSectionsData = (id, data) =>
+  fetchData(`sections/update/${id}`, { method: "POST", body: data });
+export const deleteSectionsData = (id) =>
+  fetchData(`sections/delete/${id}`, { method: "DELETE" });
+
+
+
+
+// good api
 export const getSection = () => fetchData("section-data");
 export const getCategory = () => fetchData("category-data");
 export const getAuthor = () => fetchData("author-data");

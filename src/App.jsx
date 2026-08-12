@@ -6,6 +6,7 @@ import { tokenManager } from "./services/api";
 import Categories from "./sections/Categories";
 import { Authors } from "./sections/Authors";
 import News from "./sections/News";
+import Sections from "./sections/Sections";
 
 
 function ProtectedRoute({ children }) {
@@ -49,6 +50,11 @@ const router = createBrowserRouter([
       {
         path: "/news",
         element: <News />
+      }, 
+
+      {
+        path: "/sections",
+        element: <Sections />
       }
 
      

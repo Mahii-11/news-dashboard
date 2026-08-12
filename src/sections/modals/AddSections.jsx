@@ -1,15 +1,15 @@
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import { storeFaqsData } from "../../services/api";
+import { storeSectionsData } from "../../services/api";
 
-export default function AddFaqs({ isOpen, onClose, onAdd }) {
+export default function AddSections({ isOpen, onClose, onAdd }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
 
   const [formData, setFormData] = useState({
-    question: "",
-    answer: "",
+    name: "",
+    slug: "",
   });
 
   
@@ -30,15 +30,15 @@ export default function AddFaqs({ isOpen, onClose, onAdd }) {
     setError(null);
 
     try {
-      const response = await storeFaqsData(formData);
+      const response = await storeSectionsData(formData);
       
       if (response) {
         if (onAdd) onAdd(); 
         
     
         setFormData({
-          question: '',
-          answer: ''
+          name: '',
+          slug: ''
         });
         
         onClose(); 
@@ -57,8 +57,8 @@ export default function AddFaqs({ isOpen, onClose, onAdd }) {
         {/* Header */}
         <div className="modal-header">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Add Faqs</h2>
-            <p className="text-muted-foreground text-sm mt-1">Create a new Faqs item</p>
+            <h2 className="text-2xl font-bold text-foreground">Add Sections</h2>
+            <p className="text-muted-foreground text-sm mt-1">Create a new Sections item</p>
           </div>
           <button
             onClick={onClose}
@@ -80,12 +80,12 @@ export default function AddFaqs({ isOpen, onClose, onAdd }) {
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           {/* Label */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">Question *</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Name *</label>
             <input
               type="text"
-              name="question"
-              placeholder="Enter question"
-              value={formData.question}
+              name="name"
+              placeholder="Enter name"
+              value={formData.name}
               onChange={handleChange}
               className="glass-input"
               required
@@ -95,13 +95,13 @@ export default function AddFaqs({ isOpen, onClose, onAdd }) {
 
           {/* Value */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">Answer *</label>
-            <textarea
-              name="answer"
-              placeholder="Enter answer"
-              value={formData.answer}
+            <label className="block text-sm font-semibold text-foreground mb-2">Slug *</label>
+            <input
+              name="slug"
+              placeholder="Enter slug"
+              value={formData.slug}
               onChange={handleChange}
-              className="glass-input resize-none h-32"
+              className="glass-input resize-none "
               required
               disabled={loading}
             />

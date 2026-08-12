@@ -12,7 +12,8 @@ const iconMap = {
   Image: Icons.Image,
   BookOpen: Icons.BookOpen,
   Users: Icons.Users,
-  Newspaper: Icons.Newspaper
+  Newspaper: Icons.Newspaper,
+  Clapperboard: Icons.Clapperboard,
 };
 
 export default function Sidebar({ open, onToggle, onNavigate }) {

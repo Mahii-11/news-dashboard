@@ -1,13 +1,13 @@
 import  { useState } from 'react';
 import { X } from 'lucide-react';
-import { updateFaqsData,  } from '../../services/api';
+import { updateSectionsData,  } from '../../services/api';
 
-export default function EditFaqs({ item, onClose, onRefresh }) {
+export default function EditSections({ item, onClose, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    question: item?.question || '',
-    answer: item?.answer || '',
+    name: item?.name || '',
+    slug: item?.slug || '',
   });
   
   const handleChange = (e) => {
@@ -24,7 +24,7 @@ export default function EditFaqs({ item, onClose, onRefresh }) {
     setError(null);
 
     try {
-      const response = await updateFaqsData(item.id, formData);
+      const response = await updateSectionsData(item.id, formData);
       
       if (response) {
         if (onRefresh) onRefresh(); 
@@ -42,7 +42,7 @@ export default function EditFaqs({ item, onClose, onRefresh }) {
       <div className="modal-panel">
         {/* Header */}
         <div className="modal-header">
-          <h2 className="text-2xl font-bold text-foreground">Edit Faqs Item</h2>
+          <h2 className="text-2xl font-bold text-foreground">Edit Sections Item</h2>
           <button
             onClick={onClose}
             className="icon-btn"
@@ -61,12 +61,12 @@ export default function EditFaqs({ item, onClose, onRefresh }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Question
+              Name
             </label>
             <input
-              type="question"
-              name="label"
-              value={formData.question}
+              type="text"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               placeholder="e.g., Loved by students"
               className="glass-input"
@@ -76,20 +76,20 @@ export default function EditFaqs({ item, onClose, onRefresh }) {
         
 
           {/* Description */}
-          <div>
+           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-             Answer
+              Slug
             </label>
-            <textarea
-              name="answer"
-              value={formData.answer}
+            <input
+              type="text"
+              name="slug"
+              value={formData.slug}
               onChange={handleChange}
-              placeholder="Enter your answer"
-              rows="4"
-              required
-              className="glass-input resize-none"
+              placeholder="e.g., Loved by students"
+              className="glass-input"
             />
           </div>
+
 
     
           {/* Actions */}

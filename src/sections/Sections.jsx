@@ -1,16 +1,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
-import { deleteFaqsData, getFaqsData } from '../services/api'; 
+import { deleteSectionsData, getSectionsData } from '../services/api'; 
 import SkeletonLoader from '../loader/SkeletonLoader';
-import EditFaqs from './modals/EditFaqs';
-import AddFaqs from './modals/AddFaqs';
+import EditSections from './modals/EditSections';
+import AddSections from './modals/AddSections';
 
 
 
 
 
 
-export default  function Faqs() {
+export default  function Sections() {
   const [items, setItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -21,7 +21,7 @@ export default  function Faqs() {
   const loadStudyStepData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getFaqsData();
+      const data = await getSectionsData();
       console.log("Fetched Why Choose Data:", data);
       setItems(Array.isArray(data) ? data : data?.data || []);
     } catch (error) {
@@ -47,7 +47,7 @@ const handleDelete = async (id) => {
   setDeletingId(id);
 
   try {
-    await deleteFaqsData(id); 
+    await deleteSectionsData(id); 
     setItems(prevItems => prevItems.filter(item => item.id !== id));
   } catch (error) {
     console.error("Failed to delete:", error);
@@ -68,7 +68,7 @@ const handleDelete = async (id) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title text-4xl">Faqs</h1>
+          <h1 className="page-title text-4xl">Sections</h1>
           <p className="page-subtitle">Manage your key selling points and value propositions</p>
         </div>
         <button
@@ -76,7 +76,7 @@ const handleDelete = async (id) => {
           className="btn-primary flex items-center gap-2"
         >
           <Plus size={18} />
-          Add new Faqs
+          Add new Sections
         </button>
       </div>
 
@@ -92,10 +92,10 @@ const handleDelete = async (id) => {
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm border-b border-accent/10">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground w-48">
-                    Question
+                   Section Name
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Answer
+                    Section Slug
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground w-32">
                     Created
@@ -113,10 +113,10 @@ const handleDelete = async (id) => {
                       className={`transition-colors duration-150 hover:bg-muted/50 ${index % 2 === 1 ? "bg-muted/20" : ""}`}
                     >
                       <td className="px-4 py-3">
-                        <span className="font-medium text-sm text-foreground">{item.question}</span>
+                        <span className="font-medium text-sm text-foreground">{item.name}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-muted-foreground line-clamp-2">{item.answer}</span>
+                        <span className="text-sm text-muted-foreground line-clamp-2">{item.slug}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-xs text-muted-foreground">
@@ -165,7 +165,7 @@ const handleDelete = async (id) => {
       )}
 
       {/* Add Modal */}
-      <AddFaqs
+      <AddSections
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddItem}
@@ -173,7 +173,7 @@ const handleDelete = async (id) => {
 
       {/* Edit Modal */}
       {isEditModalOpen && editingItem && (
-        <EditFaqs 
+        <EditSections 
           item={editingItem}
           onClose={() => {
             setIsEditModalOpen(false);

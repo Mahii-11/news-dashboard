@@ -11,7 +11,7 @@ export const cmsNavigation = [
       { id: "/categories", label: "Categories", icon: "Menu" },
       { id: "/authors", label: "Authors", icon: "PenLine"},
       { id: "/news", label: "News", icon: "Newspaper" },
-   //   { id: "/who-We", label: "Who We Are", icon: "Building2" },
+      { id: "/sections", label: "Sections", icon: "Clapperboard" },
    //   { id: "/our-works", label: "Our-Works", icon: "FolderKanban" },
    //   { id: "/capability", label: "Our Capability", icon: "Cpu" },
     //  { id: "/our-stories", label: "Our Stories", icon: "BookOpen" },
