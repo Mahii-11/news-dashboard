@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { X, Loader2, Upload } from "lucide-react";
 import { getAuthor, getCategory, getSection, updateNewsData } from "../../services/api";
+import  RichTextEditor  from "../../components/rich-text-editor/RichTextEditor";
 const buildFormData = (item) => ({
   category_id: item?.category_id || "",
   author_id: item?.author_id || 1,
@@ -272,10 +273,12 @@ export default function EditNews({ item, onClose, onRefresh }) {
             <label className="block text-sm font-semibold text-foreground mb-1">
               Short Description
             </label>
-            <textarea
+            <RichTextEditor
               name="summary"
               value={formData.summary}
-              onChange={handleChange}
+              onChange={(html) =>
+              setFormData((prev) => ({ ...prev, description: html }))
+              }
               placeholder="Short summary of the article"
               rows="2"
               className="glass-input resize-none"
@@ -288,10 +291,12 @@ export default function EditNews({ item, onClose, onRefresh }) {
             <label className="block text-sm font-semibold text-foreground mb-1">
               Full Description <span className="text-destructive">*</span>
             </label>
-            <textarea
+             <RichTextEditor
               name="description"
               value={formData.description}
-              onChange={handleChange}
+               onChange={(html) =>
+                setFormData((prev) => ({ ...prev, description: html }))
+              }
               placeholder="Detailed news description"
               rows="4"
               

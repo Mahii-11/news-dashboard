@@ -204,21 +204,32 @@ export default function News() {
                         </div>
                       </td>
 
-                      {/* short Description (renamed from Summary) & full Description (renamed from Description) */}
-                      <td className="px-4 py-3">
-                        <div className="space-y-1">
-                          {item.summary && (
-                            <div className="text-xs font-medium text-foreground/80 line-clamp-1" title={item.summary}>
-                              <span className="text-muted-foreground font-normal">short Description: </span>
-                              {item.summary}
-                            </div>
-                          )}
-                          <div className="text-xs text-muted-foreground line-clamp-2" title={item.description}>
-                            <span className="font-normal">full Description: </span>
-                            {item.description || "No full description provided."}
-                          </div>
-                        </div>
-                      </td>
+                   {/* Description Info Column */}
+<td className="px-4 py-3 min-w-[220px]">
+  <div className="space-y-1.5">
+    {/* short Description */}
+    <div className="text-xs text-foreground/90">
+      <span className="font-semibold text-muted-foreground block text-[11px] uppercase tracking-wider">
+        short Description:
+      </span>
+      <p className="line-clamp-2 text-xs leading-tight" title={item.summary || "No short description"}>
+        {item.summary ? item.summary : <span className="italic text-muted-foreground/60">No summary provided</span>}
+      </p>
+    </div>
+
+    {/* full Description */}
+    <div className="text-xs text-muted-foreground">
+      <span className="font-semibold text-muted-foreground/80 block text-[11px] uppercase tracking-wider">
+        full Description:
+      </span>
+      <p className="line-clamp-2 text-xs leading-tight" title={item.description}>
+        {item.description && item.description !== "<p></p>" 
+          ? item.description.replace(/<[^>]*>/g, '') 
+          : <span className="italic text-muted-foreground/60">No full description provided</span>}
+      </p>
+    </div>
+  </div>
+</td>
 
                       {/* New Column: section_name */}
                       <td className="px-4 py-3 text-center">
