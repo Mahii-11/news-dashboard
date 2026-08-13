@@ -154,9 +154,6 @@ export default function News() {
                   <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
                     Views
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                    Language
-                  </th>
                   <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground w-28">
                     Media / Type
                   </th>
@@ -225,7 +222,7 @@ export default function News() {
 
                       {/* New Column: section_name */}
                       <td className="px-4 py-3 text-center">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[9px] font-medium bg-primary/10 text-primary border border-primary/20">
                           <LayoutList size={12} />
                           {item.sections_name || "N/A"}
                         </span>
@@ -253,12 +250,7 @@ export default function News() {
                         </span>
                       </td>
 
-                      {/* Language / Type Column */}
-                      <td className="px-4 py-3 text-center">
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-semibold bg-primary/10 text-primary uppercase border border-primary/20">
-                          {item.type || "N/A"}
-                        </span>
-                      </td>
+                    
 
                       {/* Video / Live Badges */}
                       <td className="px-4 py-3 text-center">
