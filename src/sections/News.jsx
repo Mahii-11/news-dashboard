@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Loader2, Eye, Video, Radio, Newspaper, User, Folder } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, Eye, Video, Radio, Newspaper, User, Folder, LayoutList } from 'lucide-react';
 import { deleteNewsData, getNewsData, getCategory, getAuthor } from '../services/api'; 
 import SkeletonLoader from '../loader/SkeletonLoader';
 import AddNews from './modals/AddNews';
@@ -25,7 +25,7 @@ export default function News() {
     }
   }, []);
 
-  // Load Authors API (Corrected Data Extraction)
+  // Load Authors API
   const loadAuthors = useCallback(async () => {
     try {
       const response = await getAuthor();
@@ -38,7 +38,7 @@ export default function News() {
     }
   }, []);
 
-  // Load News Data API (Corrected Data Extraction)
+  // Load News Data API
   const loadNewsData = useCallback(async () => {
     setLoading(true);
     try {
@@ -74,7 +74,7 @@ export default function News() {
     return item.category_id ? `Cat ID: ${item.category_id}` : null;
   };
 
-  // Author Name Matcher (Using state & author_id)
+  // Author Name Matcher
   const getAuthorName = (authorId) => {
     if (!authorId) return "N/A";
     if (authors.length > 0) {
@@ -143,7 +143,10 @@ export default function News() {
                     Title & Image
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Summary & Description
+                    Description Info
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground w-32">
+                    Section Name
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground w-36">
                     Meta Info
@@ -174,7 +177,7 @@ export default function News() {
                       key={item.id}
                       className={`transition-colors duration-150 hover:bg-muted/50 ${index % 2 === 1 ? "bg-muted/20" : ""}`}
                     >
-                      {/* Title, Prefix, Suffix & Image */}
+                      {/* Title & Image Only (Prefix & Suffix Removed) */}
                       <td className="px-4 py-3">
                         <div className="flex items-start gap-3">
                           {item.image_url ? (
@@ -195,42 +198,37 @@ export default function News() {
                               No Img
                             </div>
                           )}
-                          <div className="flex flex-col gap-0.5">
-                            {/* Prefix */}
-                            {item.title_prefix && (
-                              <span className="text-[11px] font-semibold text-primary/80 uppercase tracking-wide">
-                                [{item.title_prefix}]
-                              </span>
-                            )}
-                            
+                          <div className="flex flex-col justify-center">
                             {/* Main Title */}
                             <span className="font-semibold text-sm text-foreground line-clamp-2" title={item.title}>
                               {item.title}
                             </span>
-
-                            {/* Suffix */}
-                            {item.title_suffix && (
-                              <span className="text-[11px] text-muted-foreground italic">
-                                {item.title_suffix}
-                              </span>
-                            )}
                           </div>
                         </div>
                       </td>
 
-                      {/* Summary & Description */}
+                      {/* short Description (renamed from Summary) & full Description (renamed from Description) */}
                       <td className="px-4 py-3">
                         <div className="space-y-1">
                           {item.summary && (
                             <div className="text-xs font-medium text-foreground/80 line-clamp-1" title={item.summary}>
-                              <span className="text-muted-foreground font-normal">Summary: </span>
+                              <span className="text-muted-foreground font-normal">short Description: </span>
                               {item.summary}
                             </div>
                           )}
                           <div className="text-xs text-muted-foreground line-clamp-2" title={item.description}>
-                            {item.description || "No detailed description provided."}
+                            <span className="font-normal">full Description: </span>
+                            {item.description || "No full description provided."}
                           </div>
                         </div>
+                      </td>
+
+                      {/* New Column: section_name */}
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                          <LayoutList size={12} />
+                          {item.sections_name || "N/A"}
+                        </span>
                       </td>
 
                       {/* Category Name & Author Name */}

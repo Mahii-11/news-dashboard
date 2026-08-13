@@ -56,9 +56,9 @@ export default function Sidebar({ open, onToggle, onNavigate }) {
         {open && (
           <div className="flex items-center gap-2">
             <img
-              src="/images/palo-bangla.svg"
+              src="/images/newslogo.jpg"
               alt="BanglaTech Logo"
-              className="w-auto h-8 md:h-10 object-contain transition-transform duration-300 group-hover:scale-105"
+              className="w-auto h-20 md:h-24 object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </div>
         )}

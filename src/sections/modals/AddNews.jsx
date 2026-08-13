@@ -13,9 +13,7 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
   const initialFormData = {
     category_id: 1,
     author_id: 1,
-    type: "bn", // Default value bangla ('bn')
-    title_prefix: "",
-    title_suffix: "",
+    type: "bn",
     title: "",
     summary: "",
     description: "",
@@ -29,7 +27,6 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  // Load Sections
   useEffect(() => {
     const loadSection = async () => {
       try {
@@ -199,42 +196,11 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Title Prefix & Suffix */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-1">
-                Title Prefix
-              </label>
-              <input
-                type="text"
-                name="title_prefix"
-                placeholder="e.g. চট্টগ্রামের খবর"
-                value={formData.title_prefix}
-                onChange={handleChange}
-                className="glass-input"
-                disabled={loading}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-1">
-                Title Suffix
-              </label>
-              <input
-                type="text"
-                name="title_suffix"
-                placeholder="e.g. স্থগিত করা হলো"
-                value={formData.title_suffix}
-                onChange={handleChange}
-                className="glass-input"
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          {/* Main Title */}
+        
+       {/* Title */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-1">
-              Main Title <span className="text-destructive">*</span>
+             Title <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -250,7 +216,7 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
           {/* Image Upload Zone */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">
-              Featured Image <span className="text-destructive">*</span>
+             Image <span className="text-destructive">*</span>
             </label>
             <label className="upload-zone group block cursor-pointer border-2 border-dashed border-accent/20 rounded-xl p-6 text-center hover:bg-accent/5 transition-all">
               {preview ? (
@@ -306,10 +272,10 @@ export default function AddNews({ isOpen, onClose, onAdd }) {
             />
           </div>
 
-          {/* Summary */}
+          {/* Short Description */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-1">
-              Summary
+              Short Description
             </label>
             <textarea
               name="summary"
