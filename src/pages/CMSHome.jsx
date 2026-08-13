@@ -12,7 +12,7 @@ export function CMSHome({ onNavigate }) {
   return (
     <div className="space-y-8">
       <div>
-       <h1 className="page-title">Prothom <span className='text-red-600'>ALo</span> Dashboard</h1>
+       <h1 className="page-title"><span className='first-letter:font-bold first-letter:text-red-600'>eBarta</span> Dashboard</h1>
         <p className="page-subtitle">Welcome back to your content management hub</p>
       </div>
 
