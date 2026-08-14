@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { X, Loader2, Upload } from "lucide-react";
 import { getAuthor, getCategory, getSection, updateNewsData } from "../../services/api";
-import  RichTextEditor  from "../../components/rich-text-editor/RichTextEditor";
+import RichTextEditor from "../../components/rich-text-editor/RichTextEditor";
+
 const buildFormData = (item) => ({
   category_id: item?.category_id || "",
   author_id: item?.author_id || 1,
   title: item?.title || "",
-  type: item?.type || "",
+  type: item?.type || "bn", 
   summary: item?.summary || "",
   description: item?.description || "",
   image: null,
@@ -36,17 +37,13 @@ export default function EditNews({ item, onClose, onRefresh }) {
   useEffect(() => {
     const loadSection = async () => {
       try {
-        setLoading(true);
         const data = await getSection();
         setSection(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching Sections data", error);
         setSection([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     loadSection();
   }, []);
 
@@ -54,17 +51,13 @@ export default function EditNews({ item, onClose, onRefresh }) {
   useEffect(() => {
     const loadCategory = async () => {
       try {
-        setLoading(true);
         const data = await getCategory();
         setCategory(Array.isArray(data) ? data : data?.data || []);
       } catch (error) {
         console.error("Error fetching Category data", error);
         setCategory([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     loadCategory();
   }, []);
 
@@ -72,17 +65,13 @@ export default function EditNews({ item, onClose, onRefresh }) {
   useEffect(() => {
     const loadAuthors = async () => {
       try {
-        setLoading(true);
         const data = await getAuthor();
         setAuthor(Array.isArray(data) ? data : data?.data || []);
       } catch (error) {
-        console.error("Error fetching Authros data", error);
+        console.error("Error fetching Authors data", error);
         setAuthor([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     loadAuthors();
   }, []);
 
@@ -126,40 +115,44 @@ export default function EditNews({ item, onClose, onRefresh }) {
     });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  try {
-    const submitData = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (key === "sections") {
-        formData.sections.forEach((sItem, index) => {
-          submitData.append(`sections[${index}][section_id]`, sItem.section_id);
-        });
-      } else if (key === "image") {
-        if (formData.image) {
-          submitData.append("image", formData.image);
+    try {
+      const submitData = new FormData();
+      
+      // FIXED: Critical for Laravel Form Data Update Request
+      submitData.append("_method", "PUT");
+
+      Object.keys(formData).forEach((key) => {
+        if (key === "sections") {
+          formData.sections.forEach((sItem, index) => {
+            submitData.append(`sections[${index}][section_id]`, sItem.section_id);
+          });
+        } else if (key === "image") {
+          if (formData.image) {
+            submitData.append("image", formData.image);
+          }
+        } else if (formData[key] !== null && formData[key] !== undefined) {
+          submitData.append(key, formData[key]);
         }
-      } else if (formData[key] !== null && formData[key] !== undefined) {
-        submitData.append(key, formData[key]);
+      });
+
+      const response = await updateNewsData(item.id, submitData);
+
+      if (response) {
+        if (onRefresh) onRefresh();
+        onClose();
       }
-    });
-
-    const response = await updateNewsData(item.id, submitData);
-
-    if (response) {
-      if (onRefresh) onRefresh();
-      onClose();
+    } catch (err) {
+      console.error("Update error:", err);
+      setError(err.message || "Something went wrong while updating.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Update error:", err);
-    setError(err.message || "Something went wrong while updating.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="modal-overlay p-4 no-scrollbar">
@@ -190,12 +183,10 @@ export default function EditNews({ item, onClose, onRefresh }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-        
-
           {/* Title */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-1">
-             Title <span className="text-destructive">*</span>
+              Title <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -203,16 +194,16 @@ export default function EditNews({ item, onClose, onRefresh }) {
               value={formData.title}
               onChange={handleChange}
               placeholder="Enter main news title"
-              
               className="glass-input"
               disabled={loading}
+              required
             />
           </div>
 
           {/* Image Upload Zone */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">
-             Image
+              Image
             </label>
             <label className="upload-zone group block cursor-pointer border-2 border-dashed border-accent/20 rounded-xl p-6 text-center hover:bg-accent/5 transition-all">
               {preview ? (
@@ -277,7 +268,7 @@ export default function EditNews({ item, onClose, onRefresh }) {
               name="summary"
               value={formData.summary}
               onChange={(html) =>
-              setFormData((prev) => ({ ...prev, description: html }))
+                setFormData((prev) => ({ ...prev, summary: html })) // FIXED: set summary instead of description
               }
               placeholder="Short summary of the article"
               rows="2"
@@ -291,26 +282,22 @@ export default function EditNews({ item, onClose, onRefresh }) {
             <label className="block text-sm font-semibold text-foreground mb-1">
               Full Description <span className="text-destructive">*</span>
             </label>
-             <RichTextEditor
+            <RichTextEditor
               name="description"
               value={formData.description}
-               onChange={(html) =>
+              onChange={(html) =>
                 setFormData((prev) => ({ ...prev, description: html }))
               }
               placeholder="Detailed news description"
               rows="4"
-              
               className="glass-input resize-none"
               disabled={loading}
             />
           </div>
 
-
-          
-
           {/* Published At & Category Select */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div>
+            <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Language <span className="text-destructive">*</span>
               </label>
@@ -320,12 +307,13 @@ export default function EditNews({ item, onClose, onRefresh }) {
                 onChange={handleChange}
                 className="glass-input"
                 disabled={loading}
+                required
               >
                 <option value="bn">Bangla</option>
                 <option value="en">English</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Category <span className="text-destructive">*</span>
@@ -335,8 +323,8 @@ export default function EditNews({ item, onClose, onRefresh }) {
                 value={formData.category_id}
                 onChange={handleChange}
                 className="glass-input"
-                
                 disabled={loading}
+                required
               >
                 <option value="">Select a category</option>
                 {Array.isArray(category) &&
@@ -348,8 +336,7 @@ export default function EditNews({ item, onClose, onRefresh }) {
               </select>
             </div>
 
-
-              <div>
+            <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Author <span className="text-destructive">*</span>
               </label>
@@ -358,8 +345,8 @@ export default function EditNews({ item, onClose, onRefresh }) {
                 value={formData.author_id}
                 onChange={handleChange}
                 className="glass-input"
-                
                 disabled={loading}
+                required
               >
                 <option value="">Select an Author</option>
                 {Array.isArray(author) &&
@@ -371,7 +358,7 @@ export default function EditNews({ item, onClose, onRefresh }) {
               </select>
             </div>
 
-             <div>
+            <div>
               <label className="block text-sm font-semibold text-foreground mb-1">
                 Published Date
               </label>
