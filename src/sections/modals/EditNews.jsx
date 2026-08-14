@@ -115,16 +115,13 @@ export default function EditNews({ item, onClose, onRefresh }) {
     });
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
       const submitData = new FormData();
-      
-      // FIXED: Critical for Laravel Form Data Update Request
-      submitData.append("_method", "PUT");
 
       Object.keys(formData).forEach((key) => {
         if (key === "sections") {
@@ -268,7 +265,7 @@ export default function EditNews({ item, onClose, onRefresh }) {
               name="summary"
               value={formData.summary}
               onChange={(html) =>
-                setFormData((prev) => ({ ...prev, summary: html })) // FIXED: set summary instead of description
+                setFormData((prev) => ({ ...prev, summary: html })) 
               }
               placeholder="Short summary of the article"
               rows="2"
@@ -324,7 +321,6 @@ export default function EditNews({ item, onClose, onRefresh }) {
                 onChange={handleChange}
                 className="glass-input"
                 disabled={loading}
-                required
               >
                 <option value="">Select a category</option>
                 {Array.isArray(category) &&
@@ -346,7 +342,6 @@ export default function EditNews({ item, onClose, onRefresh }) {
                 onChange={handleChange}
                 className="glass-input"
                 disabled={loading}
-                required
               >
                 <option value="">Select an Author</option>
                 {Array.isArray(author) &&

@@ -6,6 +6,12 @@ import SkeletonLoader from '../loader/SkeletonLoader';
 import AddNews from './modals/AddNews';
 import EditNews from './modals/EditNews';
 
+// HTML Tag রিমুভ করার হেল্পার ফাংশন
+const stripHtml = (html) => {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '').trim();
+};
+
 export default function News() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]); 
@@ -45,14 +51,11 @@ export default function News() {
   }, []);
 
   // Load News Data API with Page Parameter
-  // Load News Data API with Page Parameter
   const loadNewsData = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      // API থেকে Raw Response আসবে
       const response = await getNewsData(page); 
       
-      // Response Structure: { status: true, data: { current_page: 1, last_page: 6, total: 53, data: [...] } }
       const pagination = response?.data || {};
       const newsList = pagination?.data || [];
 
@@ -67,6 +70,7 @@ export default function News() {
       setLoading(false);
     }
   }, []);
+
   useEffect(() => {
     loadCategories();
     loadAuthors();
@@ -118,7 +122,6 @@ export default function News() {
     try {
       await deleteNewsData(id); 
       setItems(prevItems => prevItems.filter(item => item.id !== id));
-      // Refresh current page if item list gets empty after delete
       if (items.length === 1 && currentPage > 1) {
         setCurrentPage(prev => prev - 1);
       }
@@ -195,6 +198,8 @@ export default function News() {
               <tbody className="divide-y divide-accent/5">
                 {items.map((item, index) => {
                   const categoryName = getCategoryName(item);
+                  const cleanSummary = stripHtml(item.summary);
+                  const cleanDescription = stripHtml(item.description);
 
                   return (
                     <tr
@@ -230,15 +235,15 @@ export default function News() {
                         </div>
                       </td>
 
-                      {/* Description Info Column */}
+                      {/* Description Info Column (FIXED) */}
                       <td className="px-4 py-3 min-w-[220px]">
                         <div className="space-y-1.5">
                           <div className="text-xs text-foreground/90">
                             <span className="font-semibold text-muted-foreground block text-[11px] uppercase tracking-wider">
                               short Description:
                             </span>
-                            <p className="line-clamp-2 text-xs leading-tight" title={item.summary || "No short description"}>
-                              {item.summary ? item.summary : <span className="italic text-muted-foreground/60">No summary provided</span>}
+                            <p className="line-clamp-2 text-xs leading-tight" title={cleanSummary || "No short description"}>
+                              {cleanSummary ? cleanSummary : <span className="italic text-muted-foreground/60">No summary provided</span>}
                             </p>
                           </div>
 
@@ -246,10 +251,8 @@ export default function News() {
                             <span className="font-semibold text-muted-foreground/80 block text-[11px] uppercase tracking-wider">
                               full Description:
                             </span>
-                            <p className="line-clamp-2 text-xs leading-tight" title={item.description}>
-                              {item.description && item.description !== "<p></p>" 
-                                ? item.description.replace(/<[^>]*>/g, '') 
-                                : <span className="italic text-muted-foreground/60">No full description provided</span>}
+                            <p className="line-clamp-2 text-xs leading-tight" title={cleanDescription || "No full description"}>
+                              {cleanDescription ? cleanDescription : <span className="italic text-muted-foreground/60">No full description provided</span>}
                             </p>
                           </div>
                         </div>
