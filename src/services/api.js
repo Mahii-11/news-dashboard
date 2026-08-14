@@ -207,7 +207,10 @@ export const deleteAuthorsData = (id) =>
 
 
 // News
-export const getNewsData = (params) => fetchData(buildEndpoint("news/index", params));
+
+export const getNewsData = (page = 1) => {
+  return fetchData(`news/index?page=${page}`, { raw: true });
+};
 export const storeNewsData = (data) =>
   fetchData("news/store", { method: "POST", body: data });
 export const updateNewsData = (id, data) =>

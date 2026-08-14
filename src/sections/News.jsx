@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Loader2, Eye, Video, Radio, Newspaper, User, Folder, LayoutList } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, Eye, Video, Radio, Newspaper, User, Folder, LayoutList, ChevronLeft, ChevronRight } from 'lucide-react';
 import { deleteNewsData, getNewsData, getCategory, getAuthor } from '../services/api'; 
 import SkeletonLoader from '../loader/SkeletonLoader';
 import AddNews from './modals/AddNews';
@@ -14,6 +15,11 @@ export default function News() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [loading, setLoading] = useState(false); 
   const [deletingId, setDeletingId] = useState(null);
+
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   // Load Categories API
   const loadCategories = useCallback(async () => {
@@ -38,28 +44,45 @@ export default function News() {
     }
   }, []);
 
-  // Load News Data API
-  const loadNewsData = useCallback(async () => {
+  // Load News Data API with Page Parameter
+  // Load News Data API with Page Parameter
+  const loadNewsData = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const response = await getNewsData();
-      const newsList = Array.isArray(response) 
-        ? response 
-        : response?.data?.data || response?.data || [];
+      // API থেকে Raw Response আসবে
+      const response = await getNewsData(page); 
+      
+      // Response Structure: { status: true, data: { current_page: 1, last_page: 6, total: 53, data: [...] } }
+      const pagination = response?.data || {};
+      const newsList = pagination?.data || [];
+
       setItems(newsList);
+      setCurrentPage(pagination?.current_page || page);
+      setTotalPages(pagination?.last_page || 1);
+      setTotalItems(pagination?.total || newsList.length);
+
     } catch (error) {
       console.error("Error loading news data:", error);
     } finally {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
-    const fetchAsyncData = async () => {
-      await Promise.all([loadNewsData(), loadCategories(), loadAuthors()]);
-    };
-    fetchAsyncData();
-  }, [loadNewsData, loadCategories, loadAuthors]);
+    loadCategories();
+    loadAuthors();
+  }, [loadCategories, loadAuthors]);
+
+  // Execute news fetch whenever currentPage changes
+  useEffect(() => {
+    loadNewsData(currentPage);
+  }, [currentPage, loadNewsData]);
+
+  // Page Navigation Handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      setCurrentPage(newPage);
+    }
+  };
 
   // Category Name Matcher
   const getCategoryName = (item) => {
@@ -95,6 +118,10 @@ export default function News() {
     try {
       await deleteNewsData(id); 
       setItems(prevItems => prevItems.filter(item => item.id !== id));
+      // Refresh current page if item list gets empty after delete
+      if (items.length === 1 && currentPage > 1) {
+        setCurrentPage(prev => prev - 1);
+      }
     } catch (error) {
       console.error("Failed to delete:", error);
     } finally {
@@ -103,7 +130,7 @@ export default function News() {
   };
 
   const handleAddItem = () => {
-    loadNewsData(); 
+    loadNewsData(currentPage); 
   };
 
   const editingItem = items.find(item => item.id === editingId);
@@ -174,7 +201,7 @@ export default function News() {
                       key={item.id}
                       className={`transition-colors duration-150 hover:bg-muted/50 ${index % 2 === 1 ? "bg-muted/20" : ""}`}
                     >
-                      {/* Title & Image Only (Prefix & Suffix Removed) */}
+                      {/* Title & Image Only */}
                       <td className="px-4 py-3">
                         <div className="flex items-start gap-3">
                           {item.image_url ? (
@@ -196,7 +223,6 @@ export default function News() {
                             </div>
                           )}
                           <div className="flex flex-col justify-center">
-                            {/* Main Title */}
                             <span className="font-semibold text-sm text-foreground line-clamp-2" title={item.title}>
                               {item.title}
                             </span>
@@ -204,34 +230,32 @@ export default function News() {
                         </div>
                       </td>
 
-                   {/* Description Info Column */}
-<td className="px-4 py-3 min-w-[220px]">
-  <div className="space-y-1.5">
-    {/* short Description */}
-    <div className="text-xs text-foreground/90">
-      <span className="font-semibold text-muted-foreground block text-[11px] uppercase tracking-wider">
-        short Description:
-      </span>
-      <p className="line-clamp-2 text-xs leading-tight" title={item.summary || "No short description"}>
-        {item.summary ? item.summary : <span className="italic text-muted-foreground/60">No summary provided</span>}
-      </p>
-    </div>
+                      {/* Description Info Column */}
+                      <td className="px-4 py-3 min-w-[220px]">
+                        <div className="space-y-1.5">
+                          <div className="text-xs text-foreground/90">
+                            <span className="font-semibold text-muted-foreground block text-[11px] uppercase tracking-wider">
+                              short Description:
+                            </span>
+                            <p className="line-clamp-2 text-xs leading-tight" title={item.summary || "No short description"}>
+                              {item.summary ? item.summary : <span className="italic text-muted-foreground/60">No summary provided</span>}
+                            </p>
+                          </div>
 
-    {/* full Description */}
-    <div className="text-xs text-muted-foreground">
-      <span className="font-semibold text-muted-foreground/80 block text-[11px] uppercase tracking-wider">
-        full Description:
-      </span>
-      <p className="line-clamp-2 text-xs leading-tight" title={item.description}>
-        {item.description && item.description !== "<p></p>" 
-          ? item.description.replace(/<[^>]*>/g, '') 
-          : <span className="italic text-muted-foreground/60">No full description provided</span>}
-      </p>
-    </div>
-  </div>
-</td>
+                          <div className="text-xs text-muted-foreground">
+                            <span className="font-semibold text-muted-foreground/80 block text-[11px] uppercase tracking-wider">
+                              full Description:
+                            </span>
+                            <p className="line-clamp-2 text-xs leading-tight" title={item.description}>
+                              {item.description && item.description !== "<p></p>" 
+                                ? item.description.replace(/<[^>]*>/g, '') 
+                                : <span className="italic text-muted-foreground/60">No full description provided</span>}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
 
-                      {/* New Column: section_name */}
+                      {/* Section Name */}
                       <td className="px-4 py-3 text-center">
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[9px] font-medium bg-primary/10 text-primary border border-primary/20">
                           <LayoutList size={12} />
@@ -260,8 +284,6 @@ export default function News() {
                           {item.views ?? 0}
                         </span>
                       </td>
-
-                    
 
                       {/* Video / Live Badges */}
                       <td className="px-4 py-3 text-center">
@@ -337,6 +359,37 @@ export default function News() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-6 py-4 bg-muted/30 border-t border-accent/10">
+            <div className="text-xs text-muted-foreground">
+              Showing <span className="font-semibold text-foreground">{items.length}</span> of <span className="font-semibold text-foreground">{totalItems}</span> news articles
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || loading}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-card hover:bg-muted border border-accent/10 rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft size={14} />
+                Previous
+              </button>
+
+              <div className="text-xs font-medium px-2 text-foreground">
+                Page {currentPage} of {totalPages}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || loading}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-card hover:bg-muted border border-accent/10 rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Next
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -356,7 +409,7 @@ export default function News() {
             setIsEditModalOpen(false);
             setEditingId(null);
           }}
-          onRefresh={loadNewsData} 
+          onRefresh={() => loadNewsData(currentPage)} 
         />
       )}
     </div>
